@@ -1,7 +1,11 @@
 const express = require('express');
 const routes = require('./routes');
 
-const database = require('./database');
+// Load dotenv files
+require('dotenv').config();
+
+// Load database connection
+require('./database');
 
 class App {
   constructor() {

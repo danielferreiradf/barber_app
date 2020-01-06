@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const bcrypt = require('bcryptjs');
 
 class User extends Sequelize.Model {
   // This method receives sequelize connection as parameter
@@ -7,6 +8,7 @@ class User extends Sequelize.Model {
       {
         name: Sequelize.STRING,
         email: Sequelize.STRING,
+        password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
         provider: Sequelize.BOOLEAN,
       },
@@ -14,6 +16,12 @@ class User extends Sequelize.Model {
         sequelize,
       }
     );
+    this.addHook('beforeSave', async user => {
+      if (user.password) {
+        user.password_hash = await bcrypt.hash(user.password, 8);
+      }
+    });
+    return this;
   }
 }
 
