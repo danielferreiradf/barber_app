@@ -7,6 +7,12 @@ class File extends Sequelize.Model {
       {
         name: Sequelize.STRING,
         path: Sequelize.STRING,
+        url: {
+          type: Sequelize.VIRTUAL,
+          get() {
+            return `http://localhost:5000/files/${this.path}`;
+          },
+        },
       },
       {
         sequelize,
