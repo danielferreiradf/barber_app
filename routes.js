@@ -6,7 +6,9 @@ const UserController = require('./app/controllers/UserController');
 const SessionController = require('./app/controllers/SessionController');
 const FileController = require('./app/controllers/FileController');
 const ProviderController = require('./app/controllers/ProviderController');
+const AppointmentController = require('./app/controllers/AppointmentController');
 
+// Middlewares
 const authMiddleware = require('./app/middlewares/auth');
 
 const routes = new Router();
@@ -20,9 +22,17 @@ routes.put('/users', authMiddleware, UserController.update);
 routes.post('/sessions', SessionController.create);
 
 // Providers
-routes.get('/providers', ProviderController.getAll);
+routes.get('/providers', authMiddleware, ProviderController.getAll);
+
+// Appointments
+routes.post('/appointments', authMiddleware, AppointmentController.create);
 
 // Uploads
-routes.post('/files', upload.single('file'), FileController.create);
+routes.post(
+  '/files',
+  authMiddleware,
+  upload.single('file'),
+  FileController.create
+);
 
 module.exports = routes;
