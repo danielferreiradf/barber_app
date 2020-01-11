@@ -2,8 +2,33 @@ const Yup = require('yup');
 const { startOfHour, parseISO, isBefore } = require('date-fns');
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
+const File = require('../models/File');
 
 class AppointmentController {
+  async getAll(req, res) {
+    try {
+      const appointments = await Appointment.findAll({
+        where: { user_id: req.userId, canceled_at: null },
+        order: ['date'],
+        attributes: ['id', 'date'],
+        include: [
+          {
+            model: User,
+            as: 'provider',
+            attributes: ['id', 'name'],
+            include: [
+              { model: File, as: 'avatar', attributes: ['id', 'path', 'url'] },
+            ],
+          },
+        ],
+      });
+
+      return res.json(appointments);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
   async create(req, res) {
     try {
       const schema = Yup.object().shape({

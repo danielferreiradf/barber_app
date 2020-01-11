@@ -26,6 +26,7 @@ routes.get('/providers', authMiddleware, ProviderController.getAll);
 
 // Appointments
 routes.post('/appointments', authMiddleware, AppointmentController.create);
+routes.get('/appointments', authMiddleware, AppointmentController.getAll);
 
 // Uploads
 routes.post(
