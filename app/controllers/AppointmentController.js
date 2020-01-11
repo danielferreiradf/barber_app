@@ -1,4 +1,5 @@
 const Yup = require('yup');
+const { startOfHour, parseISO, isBefore } = require('date-fns');
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
 
@@ -16,7 +17,7 @@ class AppointmentController {
 
       const { provider_id, date } = req.body;
 
-      // Check if provider_id is a provider in database
+      // Checks if provider_id is a provider in database
       const isProvider = await User.findOne({
         where: {
           id: provider_id,
@@ -28,6 +29,29 @@ class AppointmentController {
         return res
           .status(401)
           .json({ error: 'Appointments can only be created by providers.' });
+      }
+
+      // Converts "date" into a javaScript Date
+      const hourStart = startOfHour(parseISO(date));
+
+      // Checks if given date is before current time
+      if (isBefore(hourStart, new Date())) {
+        return res.status(400).json({ error: 'Past date is not allowed.' });
+      }
+
+      // Checks if provider already has an appointment at given time
+      const appointmentTaken = await Appointment.findOne({
+        where: {
+          provider_id,
+          canceled_at: null,
+          date: hourStart,
+        },
+      });
+
+      if (appointmentTaken) {
+        return res
+          .status(400)
+          .json({ error: 'Appointment date is not available.' });
       }
 
       const appointment = await Appointment.create({
