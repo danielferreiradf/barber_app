@@ -32,6 +32,9 @@ routes.get('/appointments', authMiddleware, AppointmentController.getAll);
 // Schedule
 routes.get('/schedule', authMiddleware, ScheduleController.getAll);
 
+// Notifications
+routes.get('/providers', authMiddleware, ProviderController.getAll);
+
 // Uploads
 routes.post(
   '/files',
