@@ -1,5 +1,6 @@
 # Folders
 node_modules
+temp/uploads/*
 
 # Files
-.env
+config/config.env

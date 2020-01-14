@@ -11,6 +11,7 @@ const Appointment = require('../models/Appointment');
 const User = require('../models/User');
 const File = require('../models/File');
 const Notification = require('../schemas/Notification');
+const Mail = require('../../lib/Mail');
 
 class AppointmentController {
   async getAll(req, res) {
@@ -104,7 +105,6 @@ class AppointmentController {
       });
 
       // Notify appointment provider
-
       const user = await User.findByPk(req.userId);
       const formattedDate = format(
         hourStart,
@@ -125,7 +125,14 @@ class AppointmentController {
 
   async delete(req, res) {
     try {
-      const appointment = await Appointment.findByPk(req.params.appointment_id);
+      const appointment = await Appointment.findByPk(
+        req.params.appointment_id,
+        {
+          include: [
+            { model: User, as: 'provider', attributes: ['name', 'email'] },
+          ],
+        }
+      );
 
       // Checks if appointment user owner is the same as logged user
       if (appointment.user_id !== req.userId) {
@@ -147,6 +154,12 @@ class AppointmentController {
 
       appointment.canceled_at = new Date();
       await appointment.save();
+
+      await Mail.sendMail({
+        to: `${appointment.provider.name} <${appointment.provider.email}>`,
+        subject: 'BarberApp - Appointment canceled',
+        text: 'You have a new canceled appointment.',
+      });
 
       return res.json(appointment);
     } catch (error) {

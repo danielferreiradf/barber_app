@@ -1,5 +1,5 @@
 // Load dotenv files
-require('dotenv').config();
+require('dotenv').config({ path: './config/config.env' });
 
 module.exports = {
   dialect: 'postgres',

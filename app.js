@@ -1,9 +1,9 @@
 const express = require('express');
-const routes = require('./routes');
 const path = require('path');
+const routes = require('./routes');
 
 // Load dotenv files
-require('dotenv').config();
+require('dotenv').config({ path: './config/config.env' });
 
 // Load database connection
 require('./database');
