@@ -8,6 +8,7 @@ const FileController = require('./app/controllers/FileController');
 const ProviderController = require('./app/controllers/ProviderController');
 const AppointmentController = require('./app/controllers/AppointmentController');
 const ScheduleController = require('./app/controllers/ScheduleController');
+const NotificationController = require('./app/controllers/NotificationController');
 
 // Middlewares
 const authMiddleware = require('./app/middlewares/auth');
@@ -33,7 +34,12 @@ routes.get('/appointments', authMiddleware, AppointmentController.getAll);
 routes.get('/schedule', authMiddleware, ScheduleController.getAll);
 
 // Notifications
-routes.get('/providers', authMiddleware, ProviderController.getAll);
+routes.get('/notifications', authMiddleware, NotificationController.getAll);
+routes.put(
+  '/notifications/:notification_id',
+  authMiddleware,
+  NotificationController.update
+);
 
 // Uploads
 routes.post(

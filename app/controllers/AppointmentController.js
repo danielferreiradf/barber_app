@@ -58,7 +58,14 @@ class AppointmentController {
       if (!isProvider) {
         return res
           .status(401)
-          .json({ error: 'Appointments can only be created by providers.' });
+          .json({ error: 'Appointments can only be made for providers.' });
+      }
+
+      // Checks if userId and provider_id are the same
+      if (req.userId === provider_id) {
+        return res
+          .status(401)
+          .json({ error: 'User and provider cannot be equal.' });
       }
 
       // Converts "date" into a javaScript Date
