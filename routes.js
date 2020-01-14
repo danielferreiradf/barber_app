@@ -19,6 +19,7 @@ const upload = multer(multerConfig);
 // Users
 routes.post('/users', UserController.create);
 routes.put('/users', authMiddleware, UserController.update);
+routes.get('/users', authMiddleware, UserController.getCurrent);
 
 // Sessions
 routes.post('/sessions', SessionController.create);
@@ -29,6 +30,11 @@ routes.get('/providers', authMiddleware, ProviderController.getAll);
 // Appointments
 routes.post('/appointments', authMiddleware, AppointmentController.create);
 routes.get('/appointments', authMiddleware, AppointmentController.getAll);
+routes.delete(
+  '/appointments/:appointment_id',
+  authMiddleware,
+  AppointmentController.delete
+);
 
 // Schedule
 routes.get('/schedule', authMiddleware, ScheduleController.getAll);

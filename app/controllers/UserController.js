@@ -79,6 +79,23 @@ class UserController {
       return res.status(500).json({ error: error.message });
     }
   }
+
+  // ------
+  async getCurrent(req, res) {
+    try {
+      const user = await User.findByPk(req.userId, {
+        attributes: ['id', 'name', 'email', 'provider'],
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+
+      return res.json(user);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new UserController();

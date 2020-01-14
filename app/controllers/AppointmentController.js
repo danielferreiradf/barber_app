@@ -1,5 +1,11 @@
 const Yup = require('yup');
-const { startOfHour, parseISO, isBefore, format } = require('date-fns');
+const {
+  startOfHour,
+  parseISO,
+  isBefore,
+  format,
+  subHours,
+} = require('date-fns');
 const pt = require('date-fns/locale/pt');
 const Appointment = require('../models/Appointment');
 const User = require('../models/User');
@@ -8,8 +14,8 @@ const Notification = require('../schemas/Notification');
 
 class AppointmentController {
   async getAll(req, res) {
-    const { page = 1 } = req.query;
     try {
+      const { page = 1 } = req.query;
       const appointments = await Appointment.findAll({
         where: { user_id: req.userId, canceled_at: null },
         order: ['date'],
@@ -110,6 +116,37 @@ class AppointmentController {
         content: `Novo agendamento de ${user.name} para ${formattedDate} `,
         user: provider_id,
       });
+
+      return res.json(appointment);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  async delete(req, res) {
+    try {
+      const appointment = await Appointment.findByPk(req.params.appointment_id);
+
+      // Checks if appointment user owner is the same as logged user
+      if (appointment.user_id !== req.userId) {
+        return res.status(401).json({
+          error: 'User does not have permission to delete this appointment.',
+        });
+      }
+
+      // Users can only cancel appointment if it is at least 2 hours in advance
+      // Subtracks 2 hours from appointment date
+      const dateWithSub = subHours(appointment.date, 2);
+
+      // Checks if subtracted date is at least 2 hours before current date
+      if (isBefore(dateWithSub, new Date())) {
+        return res.status(401).json({
+          error: 'You can only cancel appointments 2 hours in advance',
+        });
+      }
+
+      appointment.canceled_at = new Date();
+      await appointment.save();
 
       return res.json(appointment);
     } catch (error) {
