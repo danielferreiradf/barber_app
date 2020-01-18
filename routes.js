@@ -9,6 +9,7 @@ const ProviderController = require('./app/controllers/ProviderController');
 const AppointmentController = require('./app/controllers/AppointmentController');
 const ScheduleController = require('./app/controllers/ScheduleController');
 const NotificationController = require('./app/controllers/NotificationController');
+const AvailableController = require('./app/controllers/AvailableController');
 
 // Middlewares
 const authMiddleware = require('./app/middlewares/auth');
@@ -26,6 +27,11 @@ routes.post('/sessions', SessionController.create);
 
 // Providers
 routes.get('/providers', authMiddleware, ProviderController.getAll);
+routes.get(
+  '/providers/:provider_id/available',
+  authMiddleware,
+  AvailableController.get
+);
 
 // Appointments
 routes.post('/appointments', authMiddleware, AppointmentController.create);
