@@ -30,7 +30,7 @@ routes.get('/providers', authMiddleware, ProviderController.getAll);
 routes.get(
   '/providers/:provider_id/available',
   authMiddleware,
-  AvailableController.get
+  AvailableController.getAll
 );
 
 // Appointments
