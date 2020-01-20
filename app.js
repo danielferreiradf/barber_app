@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 const Sentry = require('@sentry/node');
 const routes = require('./routes');
 
@@ -23,7 +24,7 @@ class App {
     if (process.env.NODE_ENV === 'production') {
       this.server.use(Sentry.Handlers.requestHandler());
     }
-
+    this.server.use(cors());
     this.server.use(express.json());
     this.server.use(
       '/files',
